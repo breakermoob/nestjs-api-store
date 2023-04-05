@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -23,7 +25,9 @@ export class ProductsController {
     return `Products filter`;
   }
 
-  @Get(':id') getProduct(@Param('id') id: string) {
+  @Get(':id')
+  @HttpCode(HttpStatus.ACCEPTED)
+  getProduct(@Param('id') id: string) {
     return `Product: ${id}`;
   }
 
