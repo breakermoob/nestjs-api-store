@@ -9,7 +9,9 @@ import {
   Post,
   Put,
   Query,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 
 @Controller('products')
 export class ProductsController {
@@ -21,7 +23,8 @@ export class ProductsController {
     return `Products: limite: ${limite}, offset: ${offset}, brand: ${brand}`;
   }
 
-  @Get('filter') getProductsFilter() {
+  @Get('filter') getProductsFilter(@Res() response: Response) {
+    response.status(202).send('filter'); // is a best way to use HttpCode and HttpStatus from @nestjs/common
     return `Products filter`;
   }
 
