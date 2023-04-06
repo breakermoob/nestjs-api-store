@@ -1,9 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ResponseMessages } from '../../constants/responseMessages';
-import { Product } from '../../models/product';
+import { ResponseMessages } from '../../shared/constants/responseMessages';
+import {
+  CreateProductDto,
+  UpdateProductDto,
+} from '../../shared/dtos/product.dto';
+import { Product } from '../../shared/models/product';
 
 @Injectable()
 export class ProductService {
+  private counterId = 1;
   private product: Product[] = [
     {
       id: 1,
@@ -23,15 +28,20 @@ export class ProductService {
     return this.product.find((item) => item.id === id);
   }
 
-  create(payload: Product) {
-    this.product.push(payload);
+  create(payload: CreateProductDto) {
+    this.counterId = this.counterId + 1;
+    const newProduct: Product = {
+      id: this.counterId,
+      ...payload,
+    };
+    this.product.push(newProduct);
     return {
       message: ResponseMessages.PRODUCT_CREATED,
       payload,
     };
   }
 
-  update(id: number, payload: Product) {
+  update(id: number, payload: UpdateProductDto) {
     const product = this.findOne(id);
     if (!product) {
       throw new NotFoundException(ResponseMessages.PRODUCT_NOT_FOUND);
