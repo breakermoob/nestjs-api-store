@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ResponseMessages } from '../../constants/responseMessages';
 import { Product } from '../../models/product';
 
@@ -33,17 +33,28 @@ export class ProductService {
 
   update(id: number, payload: Product) {
     const product = this.findOne(id);
-    if (product) {
-      const index = this.product.findIndex((item) => item.id === id);
-      this.product[index] = payload;
-      return {
-        message: ResponseMessages.PRODUCT_UPDATED,
-        payload,
-      };
+    if (!product) {
+      throw new NotFoundException(ResponseMessages.PRODUCT_NOT_FOUND);
     }
+    const index = this.product.findIndex((item) => item.id === id);
+    this.product[index] = {
+      ...product,
+      ...payload,
+    };
     return {
-      message: ResponseMessages.PRODUCT_NOT_FOUND,
+      message: ResponseMessages.PRODUCT_UPDATED,
       payload,
+    };
+  }
+
+  delete(id: number) {
+    const index = this.product.findIndex((item) => item.id === id);
+    if (index === -1) {
+      throw new NotFoundException(ResponseMessages.PRODUCT_NOT_FOUND);
+    }
+    this.product.splice(index, 1);
+    return {
+      message: ResponseMessages.PRODUCT_DELETED,
     };
   }
 }

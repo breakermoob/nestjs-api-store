@@ -46,6 +46,6 @@ export class ProductsController {
   }
 
   @Delete(':id') delete(@Param('id') id: string) {
-    return `Product: ${id} has been deleted`;
+    return this.productSvc.delete(+id);
   }
 }
