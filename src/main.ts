@@ -23,6 +23,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // throw an error if a property is not defined in the DTO
     }),
   );
+  app.enableCors();
   await app.listen(3000);
 }
 bootstrap();
