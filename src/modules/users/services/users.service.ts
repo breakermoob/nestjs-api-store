@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
-import { ConfigService } from '@nestjs/config';
+import { ConfigService, ConfigType } from '@nestjs/config';
+import config from '../../../config';
 import { ProductService } from '../../products/services/product.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
 import { Order } from '../entities/order.entity';
@@ -20,12 +21,13 @@ export class UsersService {
 
   constructor(
     private productSvc: ProductService,
-    private configSvc: ConfigService,
+    private configNestJsSvc: ConfigService,
+    @Inject(config.KEY) private configSvc: ConfigType<typeof config>,
   ) {}
 
   findAll() {
-    const apiKey = this.configSvc.get('API_KEY');
-    const dbName = this.configSvc.get('DATABASE_Name');
+    const apiKey = this.configNestJsSvc.get('API_KEY'); // Option 1: Using ConfigService
+    const dbName = this.configSvc.database.name; // Option 2: Using Inject with types
     console.log(apiKey, dbName);
     return this.users;
   }
