@@ -1,7 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-import { User } from '../entities/user.entity';
+import { ConfigService } from '@nestjs/config';
+import { ProductService } from '../../products/services/product.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import { Order } from '../entities/order.entity';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
@@ -15,7 +18,15 @@ export class UsersService {
     },
   ];
 
+  constructor(
+    private productSvc: ProductService,
+    private configSvc: ConfigService,
+  ) {}
+
   findAll() {
+    const apiKey = this.configSvc.get('API_KEY');
+    const dbName = this.configSvc.get('DATABASE_Name');
+    console.log(apiKey, dbName);
     return this.users;
   }
 
@@ -54,5 +65,14 @@ export class UsersService {
     }
     this.users.splice(index, 1);
     return true;
+  }
+
+  getOrderUser(id: number): Order {
+    const user = this.findOne(id);
+    return {
+      date: new Date(),
+      user,
+      products: this.productSvc.findAll(),
+    };
   }
 }
