@@ -11,16 +11,20 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CreateProductDto, UpdateProductDto } from '../dtos/product.dto';
 import { ParseIntPipe } from './../../../shared/pipes/parse-int/parse-int.pipe';
 import { ProductService } from './../services/product.service';
 
+@ApiTags('products')
 @Controller('products')
 export class ProductsController {
   constructor(private productSvc: ProductService) {}
 
-  @Get() getProducts(
+  @Get()
+  @ApiOperation({ summary: 'List of products' }) // set description for swagger
+  getProducts(
     @Query() limite: number,
     @Query() offset: number,
     @Query() brand: string,
