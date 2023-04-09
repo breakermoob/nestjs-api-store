@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ResponseMessages } from '../../../shared/constants/responseMessages';
+import { CreateProductDto, UpdateProductDto } from '../dtos/product.dto';
 import { Product } from '../entities/product.entity';
 
 @Injectable()
@@ -14,8 +15,8 @@ export class ProductService {
     return this.productRepo.find();
   }
 
-  findOne(id: number) {
-    const product = this.productRepo.findOneBy({ id });
+  async findOne(id: number) {
+    const product = await this.productRepo.findOneBy({ id });
     if (!product) {
       throw new NotFoundException(ResponseMessages.PRODUCT_NOT_FOUND);
     }
@@ -23,43 +24,24 @@ export class ProductService {
     return product;
   }
 
-  // create(payload: CreateProductDto) {
-  //   this.counterId = this.counterId + 1;
-  //   const newProduct: Product = {
-  //     id: this.counterId,
-  //     ...payload,
-  //   };
-  //   this.product.push(newProduct);
-  //   return {
-  //     message: ResponseMessages.PRODUCT_CREATED,
-  //     payload,
-  //   };
-  // }
+  async create(payload: CreateProductDto) {
+    const newProduct = this.productRepo.create(payload);
+    return {
+      message: ResponseMessages.PRODUCT_CREATED,
+      product: await this.productRepo.save(newProduct),
+    };
+  }
 
-  // update(id: number, payload: UpdateProductDto) {
-  //   const product = this.findOne(id);
-  //   if (!product) {
-  //     throw new NotFoundException(ResponseMessages.PRODUCT_NOT_FOUND);
-  //   }
-  //   const index = this.product.findIndex((item) => item.id === id);
-  //   this.product[index] = {
-  //     ...product,
-  //     ...payload,
-  //   };
-  //   return {
-  //     message: ResponseMessages.PRODUCT_UPDATED,
-  //     payload,
-  //   };
-  // }
+  async update(id: number, payload: UpdateProductDto) {
+    const product = await this.productRepo.findOneBy({ id });
+    this.productRepo.merge(product, payload);
+    return {
+      message: ResponseMessages.PRODUCT_UPDATED,
+      product: await this.productRepo.save(product),
+    };
+  }
 
-  // delete(id: number) {
-  //   const index = this.product.findIndex((item) => item.id === id);
-  //   if (index === -1) {
-  //     throw new NotFoundException(ResponseMessages.PRODUCT_NOT_FOUND);
-  //   }
-  //   this.product.splice(index, 1);
-  //   return {
-  //     message: ResponseMessages.PRODUCT_DELETED,
-  //   };
-  // }
+  async delete(id: number) {
+    return this.productRepo.delete(id);
+  }
 }
