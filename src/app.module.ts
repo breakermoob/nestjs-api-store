@@ -7,7 +7,6 @@ import { joiConfig } from './config.joi';
 import { environment } from './environments';
 import { DatabaseModule } from './modules/database/database.module';
 import { ProductsModule } from './modules/products/products.module';
-import { ProductService } from './modules/products/services/product.service';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -23,6 +22,6 @@ import { UsersModule } from './modules/users/users.module';
     DatabaseModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ProductService],
+  providers: [AppService],
 })
 export class AppModule {}

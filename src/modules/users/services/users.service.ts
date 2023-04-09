@@ -2,9 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import { ConfigService, ConfigType } from '@nestjs/config';
 import config from '../../../config';
-import { ProductService } from '../../products/services/product.service';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
-import { Order } from '../entities/order.entity';
 import { User } from '../entities/user.entity';
 
 @Injectable()
@@ -20,14 +18,13 @@ export class UsersService {
   ];
 
   constructor(
-    private productSvc: ProductService,
     private configNestJsSvc: ConfigService,
     @Inject(config.KEY) private configSvc: ConfigType<typeof config>,
   ) {}
 
   findAll() {
     const apiKey = this.configNestJsSvc.get('API_KEY'); // Option 1: Using ConfigService
-    const dbName = this.configSvc.database.name; // Option 2: Using Inject with types
+    const dbName = this.configSvc.postgres.database; // Option 2: Using Inject with types
     console.log(apiKey, dbName);
     return this.users;
   }
@@ -69,12 +66,12 @@ export class UsersService {
     return true;
   }
 
-  getOrderUser(id: number): Order {
+  async getOrderUser(id: number) {
     const user = this.findOne(id);
     return {
       date: new Date(),
       user,
-      products: this.productSvc.findAll(),
+      // products: await this.productSvc.findAll(),
     };
   }
 }

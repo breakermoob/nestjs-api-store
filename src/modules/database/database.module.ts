@@ -1,28 +1,28 @@
-import { HttpModule, HttpService } from '@nestjs/axios';
 import { Global, Module } from '@nestjs/common';
-import { lastValueFrom } from 'rxjs';
-
-const API_KEY = 'dev123';
-const API_KEY_PROD = 'prod123';
+import { ConfigType } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import config from '../../config';
 
 @Global()
 @Module({
-  imports: [HttpModule],
-  providers: [
-    {
-      provide: 'API_KEY',
-      useValue: process.env.NODE_ENV === 'prod' ? API_KEY_PROD : API_KEY,
-    },
-    {
-      provide: 'TASKS',
-      useFactory: async (http: HttpService) => {
-        const request = http.get('https://jsonplaceholder.typicode.com/todos');
-        const tasks = await lastValueFrom(request);
-        return tasks.data;
+  imports: [
+    TypeOrmModule.forRootAsync({
+      inject: [config.KEY],
+      useFactory: (configService: ConfigType<typeof config>) => {
+        const { user, host, port, database, password } = configService.postgres;
+        return {
+          type: 'postgres',
+          host,
+          port,
+          username: user,
+          password,
+          database,
+          synchronize: true,
+          autoLoadEntities: true,
+        };
       },
-      inject: [HttpService],
-    },
+    }),
   ],
-  exports: ['API_KEY', 'TASKS'],
+  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}
