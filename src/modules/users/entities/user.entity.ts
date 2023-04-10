@@ -39,4 +39,5 @@ export class User {
   @OneToOne(() => Customer, (customer) => customer.user, { nullable: true })
   @JoinColumn()
   customer: Customer;
+  newUser: Promise<Customer>;
 }

@@ -33,10 +33,10 @@ export class UsersService {
     return user;
   }
 
-  create(data: CreateUserDto) {
+  async create(data: CreateUserDto) {
     const newUser = this.userRepo.create(data);
     if (data.customerId) {
-      const customer = this.customerSvc.findOne(data.customerId);
+      const customer = await this.customerSvc.findOne(data.customerId);
       newUser.customer = customer;
     }
     return this.userRepo.save(newUser);
