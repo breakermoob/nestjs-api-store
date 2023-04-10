@@ -4,12 +4,22 @@ services:
   postgres:
     image: postgres:13
     environment:
-      - POSTGRES_DB=my_db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=store_postgres
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  mysql:
+    image: mysql:5
+    environment:
+      - MYSQL_DATABASE=store_mysql
+      - MYSQL_ROOT_PASSWORD=123456
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
 volumes:
   postgres_data: {}
+  mysql_data: {}
