@@ -16,7 +16,7 @@ export class ProductService {
   }
 
   async findOne(id: number) {
-    const product = await this.productRepo.findOneBy({ id });
+    const product = await this.productRepo.findOne({ id });
     if (!product) {
       throw new NotFoundException(ResponseMessages.PRODUCT_NOT_FOUND);
     }
@@ -33,7 +33,7 @@ export class ProductService {
   }
 
   async update(id: number, payload: UpdateProductDto) {
-    const product = await this.productRepo.findOneBy({ id });
+    const product = await this.productRepo.findOne({ id });
     this.productRepo.merge(product, payload);
     return {
       message: ResponseMessages.PRODUCT_UPDATED,
