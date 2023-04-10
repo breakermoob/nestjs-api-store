@@ -1,6 +1,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import { ConfigService, ConfigType } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import config from '../../../config';
 import { ProductService } from '../../products/services/product.service';
@@ -15,18 +16,18 @@ export class UsersService {
     private customerSvc: CustomersService,
     private configNestJsSvc: ConfigService,
     @Inject(config.KEY) private configSvc: ConfigType<typeof config>,
-    @Inject(User) private userRepo: Repository<User>,
+    @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
 
   findAll() {
     const apiKey = this.configNestJsSvc.get('API_KEY'); // Option 1: Using ConfigService
     const dbName = this.configSvc.postgres.database; // Option 2: Using Inject with types
     console.log(apiKey, dbName);
-    return this.userRepo.find();
+    return this.userRepo.find({ relations: ['customer'] });
   }
 
-  findOne(id: number) {
-    const user = this.userRepo.findOne(id);
+  async findOne(id: number) {
+    const user = await this.userRepo.findOne(id, { relations: ['customer'] });
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
     }

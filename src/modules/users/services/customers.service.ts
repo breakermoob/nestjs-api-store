@@ -1,15 +1,18 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateCustomerDto, UpdateCustomerDto } from '../dtos/customer.dto';
 import { Customer } from '../entities/customer.entity';
 
 @Injectable()
 export class CustomersService {
-  constructor(@Inject(Customer) private customerRepo: Repository<Customer>) {}
+  constructor(
+    @InjectRepository(Customer) private customerRepo: Repository<Customer>,
+  ) {}
 
   findAll() {
-    return this.customerRepo.find();
+    return this.customerRepo.find({ relations: ['user'] });
   }
 
   findOne(id: number) {
@@ -22,7 +25,7 @@ export class CustomersService {
 
   create(data: CreateCustomerDto) {
     const newCustomer = this.customerRepo.create(data);
-    return newCustomer;
+    return this.customerRepo.save(newCustomer);
   }
 
   async update(id: number, changes: UpdateCustomerDto) {
