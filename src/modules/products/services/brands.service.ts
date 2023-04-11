@@ -13,7 +13,7 @@ export class BrandsService {
   }
 
   findOne(id: number) {
-    const product = this.brandsRepo.findOne();
+    const product = this.brandsRepo.findOne(id, { relations: ['products'] });
     if (!product) {
       throw new NotFoundException(`Brand #${id} not found`);
     }
